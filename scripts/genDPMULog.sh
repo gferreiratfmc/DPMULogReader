@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Uncoment line below for debugging
-# set -x 
+#set -x 
 
 function usage() {
 	echo "usage" 
@@ -53,7 +53,7 @@ fi
 
 for LOG_FILE in ${DPMU_LOG_DIR}/DPMU_CAN_LOG_*.hex
 do
-	#echo "Processing file ${LOG_FILE}"
+	#echo "Pcdrocessing file ${LOG_FILE}"
 	
 	${DPMU_LOG_READER}  ${LOG_FILE}
 	FILE_NAME=$(basename $LOG_FILE)
