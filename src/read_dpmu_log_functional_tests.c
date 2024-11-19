@@ -7,7 +7,6 @@
 #include <time.h>
 #include <unistd.h>
 
-
 #define NUMBER_OF_CELLS 30
 //#define MAGIC_NUMBER 0x1234
 #define MAGIC_NUMBER 0xDEADFACE
@@ -92,9 +91,8 @@ int main(int argc, char *argv[]) {
 	}
 	
 	
-	sprintf(csvLine, "%s", "Address\tDPMU Timestamp * 10\tDateTime\tTime\tVBus\tAvgVbus\tVStore\tAvgVStore\tInputCurrent\tOutputCurrent\tSupercapCurrent\tILoopPiOutput\tLLC1_Current\tLLC2_Current\tRegAvgVStore\tRegAvgVbus\tRegAvgInputCurrent\t"
+	sprintf(csvLine, "%s", "Address\tDPMU Timestamp * 10\tTime\tVBus\tAvgVbus\tVStore\tAvgVStore\tInputCurrent\tOutputCurrent\tSupercapCurrent\tILoopPiOutput\tLLC1_Current\tLLC2_Current\tRegAvgVStore\tRegAvgVbus\tRegAvgInputCurrent\t"
 						"RegAvgOutputCurrent\tRegIref\tCurrentState\tCounter\tElapsed_time\tCPU2_ERROR_CODE\tTBase\tTMain\tTMezz\tTPWRBank");
-
 	for(int i=0;i<30;i++) {
 		sprintf(str, "\tCEL_%02d", i);
 		strcat(csvLine, str);
@@ -235,7 +233,7 @@ void create_csv_line(char *csvLine, debug_log_t readBack) {
 	sprintf( str, "0x%08x\t", readBack.address );									  strcat( csvLine, str);
 	sprintf( str, "%08u\t", readBack.CurrentTime);                                    strcat( csvLine, str);
 	sprintf( str, "%s\t", format_date(readBack.CurrentTime, str, sizeof(str) ));	  strcat( csvLine, str);
-	sprintf( str, "%6.2f\t", ( (float)(readBack.CurrentTime - firstTimeRead) ) / 10.0 );  strcat( csvLine, str);
+	sprintf( str, "%6.2f\t", ( (float)(readBack.CurrentTime - firstTimeRead) ) / 10.0 );	strcat( csvLine, str);
 	sprintf( str, "%6.2f\t", (float)readBack.Vbus/10);                                strcat( csvLine, str);
 	sprintf( str, "%6.2f\t", (float)readBack.AvgVbus/10);                             strcat( csvLine, str);
 	sprintf( str, "%6.2f\t", (float)readBack.VStore/10);                              strcat( csvLine, str);
@@ -254,7 +252,7 @@ void create_csv_line(char *csvLine, debug_log_t readBack) {
 	sprintf( str, "%02d\t", readBack.CurrentState);                                   strcat( csvLine, str);
 	sprintf( str, "%10d\t", readBack.counter);                                        strcat( csvLine, str);
 	sprintf( str, "%08d\t", readBack.elapsed_time);                                   strcat( csvLine, str);
-	//sprintf( str, "0b%s\t", convHexTo16BitsBinStr(readBack.cpu2_error_code));          strcat( csvLine, str);
+	sprintf( str, "0b%s\t", convHexTo16BitsBinStr(readBack.cpu2_error_code));          strcat( csvLine, str);
 	sprintf( str, "%02d\t", readBack.BaseBoardTemperature);                           strcat( csvLine, str);
 	sprintf( str, "%02d\t", readBack.MainBoardTemperature);                           strcat( csvLine, str);
 	sprintf( str, "%02d\t", readBack.MezzanineBoardTemperature);                      strcat( csvLine, str);

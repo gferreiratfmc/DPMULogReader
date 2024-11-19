@@ -1,10 +1,11 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <math.h>
-#include <string.h>
 #include <fcntl.h>
-#include <unistd.h>
+#include <math.h>
 #include <stdbool.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+#include <time.h>
+#include <unistd.h>
 
 
 #define NUMBER_OF_CELLS 30
@@ -48,6 +49,7 @@ void log_debug_read_from_ram( debug_log_t dblog);
 void print_buffer( unsigned char *buff);
 void print_debug_log_raw(debug_log_t dblog);
 void create_csv_line(char *csvLine, debug_log_t readBack);
+char* format_date( uint32_t dpmu_timestamp, char *formated_time_str, size_t max_size_of_str );
 
 debug_log_t dblog;
 int count;
@@ -83,7 +85,7 @@ int main(int argc, char *argv[]) {
 	}
 	
 	
-	sprintf(csvLine, "%s", "DPMU Timetamp * 10\tTime\tVBus\tAvgVbus\tVStore\tAvgVStore\tInputCurrent\tOutputCurrent\tSupercapCurrent\tILoopPiOutput\tLLC1_Current\tLLC2_Current\tRegAvgVStore\tRegAvgVbus\tRegAvgInputCurrent\t"
+	sprintf(csvLine, "%s", "DPMU Timestamp * 10\tDateTime\tTime\tVBus\tAvgVbus\tVStore\tAvgVStore\tInputCurrent\tOutputCurrent\tSupercapCurrent\tILoopPiOutput\tLLC1_Current\tLLC2_Current\tRegAvgVStore\tRegAvgVbus\tRegAvgInputCurrent\t"
 						"RegAvgOutputCurrent\tRegIref\tTBase\tTMain\tTMezz\tTPWRBank\tCounter\tCurrentState\tElapsed_time");
 	for(int i=0;i<30;i++) {
 		sprintf(str, "\tCEL_%02d", i);
@@ -255,7 +257,8 @@ void create_csv_line(char *csvLine, debug_log_t readBack) {
 	char str[512];
 	memset( csvLine, '\0', 4096);
 	sprintf( str, "%08u\t", readBack.CurrentTime);                                    strcat( csvLine, str);
-	sprintf( str, "%6.2f\t", ( (float)(readBack.CurrentTime - firstTimeRead) ) / 10.0 );				  strcat( csvLine, str);
+	sprintf( str, "%s\t", format_date(readBack.CurrentTime, str, sizeof(str) ) );	  strcat( csvLine, str);
+	sprintf( str, "%6.2f\t", ( (float)(readBack.CurrentTime - firstTimeRead) ) / 10.0 );	strcat( csvLine, str);
 	sprintf( str, "%6.2f\t", (float)readBack.Vbus/10);                                strcat( csvLine, str);
 	sprintf( str, "%6.2f\t", (float)readBack.AvgVbus/10);                             strcat( csvLine, str);
 	sprintf( str, "%6.2f\t", (float)readBack.VStore/10);                              strcat( csvLine, str);
@@ -283,4 +286,19 @@ void create_csv_line(char *csvLine, debug_log_t readBack) {
 		strcat( csvLine, str);
 	}
 	strcat( csvLine, "\r\n");
+}
+
+char* format_date( uint32_t dpmu_timestamp, char *formated_time_str, size_t max_size_of_str ) {
+	time_t t = 0;
+	struct tm lt;
+	const char format[] = "%Y%m%d %H:%M:%S";
+	
+	t = (time_t)(dpmu_timestamp);
+	
+	localtime_r(&t, &lt);
+
+	if( strftime(formated_time_str, max_size_of_str, format, &lt ) == 0 ) {
+		sprintf( formated_time_str, "YYYYMMDD HHMMSS");
+	}
+	return formated_time_str;
 }

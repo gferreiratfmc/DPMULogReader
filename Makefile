@@ -1,70 +1,34 @@
-# tool macros
-CC := gcc # FILL: the compiler
-CXX ?= # FILL: the compiler
-CFLAGS := # FILL: compile flags
-CXXFLAGS := # FILL: compile flags
-DBGFLAGS := -g
-COBJFLAGS := $(CFLAGS) -c
+CC=gcc
+CFLAGS= -g  
+LIBDIR=-L/usr/local/lib
+LIBS=
+INCLUDE=-I.  -I/usr/local/include 
+DEPS = 
+OBJS = 
 
-# path macros
-BIN_PATH := bin
-OBJ_PATH := obj
-SRC_PATH := src
-DBG_PATH := debug
+BIN=./bin
+SRC=./src
+BUILDDIR=./build
 
-# compile macros
-TARGET_NAME := read_dpmu_log_w_address
-ifeq ($(OS),Windows_NT)
-	TARGET_NAME := $(addsuffix .exe,$(TARGET_NAME))
-endif
-TARGET := $(BIN_PATH)/$(TARGET_NAME)
-TARGET_DEBUG := $(DBG_PATH)/$(TARGET_NAME)
+TARGET1=read_dpmu_log_w_address
+TARGET2=read_dpmu_log_wo_address
+TARGET3=read_dpmu_log_functional_tests
 
-# src files & obj files
-SRC := $(foreach x, $(SRC_PATH), $(wildcard $(addprefix $(x)/*,.c*)))
-OBJ := $(addprefix $(OBJ_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
-OBJ_DEBUG := $(addprefix $(DBG_PATH)/, $(addsuffix .o, $(notdir $(basename $(SRC)))))
+.c.o:
+	$(CC) -c  $(CFLAGS) $(INCLUDE) $(LIBDIR) $(LIBS) $<
 
-# clean files list
-DISTCLEAN_LIST := $(OBJ) \
-                  $(OBJ_DEBUG)
-CLEAN_LIST := $(TARGET) \
-			  $(TARGET_DEBUG) \
-			  $(DISTCLEAN_LIST)
+all: $(TARGET1) $(TARGET2) $(TARGET3)
+ 
 
-# default rule
-default: makedir all
+$(TARGET1): $(OBJS)
+	$(CC) -o $(BIN)/$@ $(SRC)/$@.c $(CFLAGS) $(INCLUDE) $(LIBDIR) $(LIBS)
 
-# non-phony targets
-$(TARGET): $(OBJ)
-	$(CC) -o $@ $(OBJ) $(CFLAGS)
+$(TARGET2): $(OBJS)
+	$(CC) -o $(BIN)/$@ $(SRC)/$@.c $(CFLAGS) $(INCLUDE) $(LIBDIR) $(LIBS)
 
-$(OBJ_PATH)/%.o: $(SRC_PATH)/%.c*
-	$(CC) $(COBJFLAGS) -o $@ $<
+$(TARGET3): $(OBJS)
+	$(CC) -o $(BIN)/$@ $(SRC)/$@.c $(CFLAGS) $(INCLUDE) $(LIBDIR) $(LIBS)
 
-$(DBG_PATH)/%.o: $(SRC_PATH)/%.c*
-	$(CC) $(COBJFLAGS) $(DBGFLAGS) -o $@ $<
 
-$(TARGET_DEBUG): $(OBJ_DEBUG)
-	$(CC) $(CFLAGS) $(DBGFLAGS) $(OBJ_DEBUG) -o $@
-
-# phony rules
-.PHONY: makedir
-makedir:
-	@mkdir -p $(BIN_PATH) $(OBJ_PATH) $(DBG_PATH)
-
-.PHONY: all
-all: $(TARGET)
-
-.PHONY: debug
-debug: $(TARGET_DEBUG)
-
-.PHONY: clean
 clean:
-	@echo CLEAN $(CLEAN_LIST)
-	@rm -f $(CLEAN_LIST)
-
-.PHONY: distclean
-distclean:
-	@echo CLEAN $(DISTCLEAN_LIST)
-	@rm -f $(DISTCLEAN_LIST)
+	rm -rf $(BUILDDIR)/*.o
