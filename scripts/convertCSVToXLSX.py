@@ -19,7 +19,8 @@ for DPMULogHexFile in DPMULogHexFileList:
     DPMULogFileBaseName = DPMULogFileBaseName.split('.')[0]
     print(f"********* Basename {DPMULogFileBaseName}")
     DPMULogCsvFile=f"{DPMUCsvDir}\\{DPMULogFileBaseName}.csv"
-    
+    print(f"Converting .hex to .csv cmd:{DPMULogRreader} {DPMULogHexFile}")
+
     # Custom executable program to convert DPMULogHex in CSV
     subprocess.check_call([DPMULogRreader, DPMULogHexFile])
     

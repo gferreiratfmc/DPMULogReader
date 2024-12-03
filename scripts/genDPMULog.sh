@@ -10,29 +10,37 @@ function usage() {
 	exit 0
 }
 
-LOG_WITH_ADDRESS=2
-while getopts "hao" arg; do
+# LOG_WITH_ADDRESS=2
+FIRMWARE_TYPE=UNDEFINED
+while getopts "hafo" arg; do
   	case $arg in
     	a)
-      		LOG_WITH_ADDRESS=1
+			FIRMWARE_TYPE=ENDURANCE_WITH_ADDRESS
       		;;
 		o)
-			LOG_WITH_ADDRESS=0
+			FIRMWARE_TYPE=ENDURANCE_WITHOUT_ADDRESS
       		;;
+		f) 
+			FIRMWARE_TYPE=FUNCTIONAL
+			;;
       	h)
 			usage
       		;;
 	esac
 done
 
-case ${LOG_WITH_ADDRESS} in
-	0 ) 
+case ${FIRMWARE_TYPE} in
+	"ENDURANCE_WITHOUT_ADDRESS" ) 
 		DPMU_LOG_READER=/home/gferreira/DPMULogReader/bin/read_dpmu_log_wo_address
 		;;
-	1 )
+	"ENDURANCE_WITH_ADDRESS" )
 		DPMU_LOG_READER=/home/gferreira/DPMULogReader/bin/read_dpmu_log_w_address
 		;;
-	2 )
+	"FUNCTIONAL" )
+		DPMU_LOG_READER=/home/gferreira/DPMULogReader/bin/read_dpmu_log_functional_tests
+		;;
+	
+	* ) 
 		usage
 		;;
 esac
